@@ -1,5 +1,13 @@
 import 'package:flutter/material.dart';
 
+// --- Constants ---
+// Moving magic numbers to constants makes them easy to find and change.
+const double _kHorizontalPadding = 16.0;
+const double _kVerticalPadding = 16.0;
+
+/// This is the main screen widget. Its only job is to build the
+/// basic page layout (Scaffold, AppBar, scrolling body) and
+/// compose the smaller widgets together.
 class NextScreen extends StatelessWidget {
   const NextScreen({super.key});
 
@@ -7,33 +15,34 @@ class NextScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9F9),
+      // The SafeArea is kept here as it's part of the main page structure
       body: SafeArea(
         child: SingleChildScrollView(
+          // This Container is responsible for the gradient background
           child: Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                // Define the colors for the gradient
-                colors: [
-                  Colors.blue, // Starting color (top)
-                  Colors.blue.withOpacity(0.0),
-                ],
-                // 'begin' sets where the gradient starts
+                colors: [Colors.blue, Colors.blue.withOpacity(0.0)],
                 begin: Alignment.topCenter,
-                // 'end' sets where the gradient stops
                 end: Alignment.bottomCenter,
               ),
             ),
+            // The Padding widget handles the main content padding
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: _kHorizontalPadding,
+                vertical: _kVerticalPadding,
+              ),
+              // The main layout is a Column of our new, smaller widgets
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildUpNextSection(),
+                  // Each section of the UI is now its own widget
+                  const _UpNextSection(),
                   const SizedBox(height: 10),
-                  _buildMealCard(),
+                  const _MealCard(),
                   const SizedBox(height: 16),
-                  // --- MODIFIED: Passed context ---
-                  _buildViewFullPlan(context),
+                  _ViewFullPlanButton(),
                 ],
               ),
             ),
@@ -42,15 +51,31 @@ class NextScreen extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _buildUpNextSection() {
-    // (This widget code is unchanged)
+// --- 1. Up Next Section Widget ---
+/// This widget is responsible *only* for displaying the "Up Next" title
+/// and the time/item count.
+///
+/// Refactor Note: I changed your inner `Column` to a `Row` here.
+/// Using `MainAxisAlignment.spaceBetween` and `CrossAxisAlignment.baseline`
+/// is standard for a Row, but has no effect on a Column. This layout
+/// now correctly places "Mid-morning" and "11:00 AM" on the same line.
+class _UpNextSection extends StatelessWidget {
+  const _UpNextSection();
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Up Next', style: TextStyle(fontSize: 13, color: Colors.black)),
+        const Text(
+          'Up Next',
+          style: TextStyle(fontSize: 13, color: Colors.black),
+        ),
         const SizedBox(height: 4),
-        Column(
+        Row(
+          // --- MODIFIED: Was Column, now Row ---
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.baseline,
           textBaseline: TextBaseline.alphabetic,
@@ -68,9 +93,16 @@ class NextScreen extends StatelessWidget {
       ],
     );
   }
+}
 
-  Widget _buildMealCard() {
-    // (This widget code is unchanged)
+// --- 2. Meal Card Widget ---
+/// This widget is responsible for drawing the Card and arranging
+/// the meal items inside it.
+class _MealCard extends StatelessWidget {
+  const _MealCard();
+
+  @override
+  Widget build(BuildContext context) {
     return Card(
       elevation: 0,
       color: Colors.white,
@@ -79,21 +111,22 @@ class NextScreen extends StatelessWidget {
         padding: const EdgeInsets.all(12.0),
         child: Column(
           children: [
-            _buildMealItem(
+            // It composes the reusable _MealItem widget
+            const _MealItem(
               icon: Icons.fastfood_outlined,
               name: '1. Moong Dal Chilla',
               quantity: '2 ladies (60g each)',
               calories: '220 kcal',
             ),
             const Divider(height: 20),
-            _buildMealItem(
+            const _MealItem(
               icon: Icons.egg_outlined,
               name: '2. Boiled Egg',
               quantity: '1 egg (50g)',
               calories: '68 kcal',
             ),
             const Divider(height: 20),
-            _buildMealItem(
+            const _MealItem(
               icon: Icons.local_cafe_outlined,
               name: '3. Green Tea (No Sugar)',
               quantity: '1 cup (50g)',
@@ -104,14 +137,27 @@ class NextScreen extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _buildMealItem({
-    required IconData icon,
-    required String name,
-    required String quantity,
-    required String calories,
-  }) {
-    // (This widget code is unchanged)
+// --- 3. Meal Item Widget ---
+/// This is the most reusable widget. It's responsible *only* for
+/// displaying a single meal item row. It's stateless and configured
+/// entirely by the parameters passed to it.
+class _MealItem extends StatelessWidget {
+  const _MealItem({
+    required this.icon,
+    required this.name,
+    required this.quantity,
+    required this.calories,
+  });
+
+  final IconData icon;
+  final String name;
+  final String quantity;
+  final String calories;
+
+  @override
+  Widget build(BuildContext context) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -154,20 +200,25 @@ class NextScreen extends StatelessWidget {
       ],
     );
   }
+}
 
-  // --- MODIFIED: Added context and SnackBar ---
-  Widget _buildViewFullPlan(BuildContext context) {
+// --- 4. View Full Plan Button ---
+/// This widget is responsible for the "View full plan" button.
+/// It's a StatelessWidget, and it gets the `BuildContext` it needs
+/// for the SnackBar from its *own* `build` method.
+class _ViewFullPlanButton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
     return Center(
       child: TextButton(
-        // --- MODIFIED: Added SnackBar ---
         onPressed: () {
+          // It can access ScaffoldMessenger using its own context
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(const SnackBar(content: Text('Loading full plan...')));
         },
         child: const Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisSize: MainAxisSize.min, // Use min to center the content
           children: [
             Text(
               'View full plan',

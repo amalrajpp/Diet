@@ -1,26 +1,31 @@
 import 'package:flutter/material.dart';
 
+// --- ADDED: Define spacing and padding as constants for reusability ---
+const double _kPagePadding = 16.0;
+const double _kSectionSpacing = 20.0;
+const double _kItemSpacing = 12.0;
+
 class DietScreen extends StatelessWidget {
   const DietScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // --- MODIFIED: Use theme color for background ---
     return Scaffold(
-      backgroundColor: const Color(0xFFF9F9F9),
+      backgroundColor: Theme.of(context).colorScheme.background,
       body: SafeArea(
         child: SingleChildScrollView(
+          // --- MODIFIED: Use constant for padding ---
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(_kPagePadding),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // --- MODIFIED: Passed context ---
                 _buildConsultantSection(context),
-                const SizedBox(height: 20),
-                // --- MODIFIED: Passed context ---
+                const SizedBox(height: _kSectionSpacing),
                 _buildActionButtons(context),
-                const SizedBox(height: 20),
-                _buildAppointmentInfo(),
+                const SizedBox(height: _kSectionSpacing),
+                _buildAppointmentInfo(context),
               ],
             ),
           ),
@@ -29,38 +34,52 @@ class DietScreen extends StatelessWidget {
     );
   }
 
-  // --- MODIFIED: Added context ---
   Widget _buildConsultantSection(BuildContext context) {
+    // --- MODIFIED: Use theme for text styles and colors ---
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Your consultant',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          // --- MODIFIED: Use semantic theme style ---
+          style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: _kItemSpacing),
         Row(
           children: [
-            const CircleAvatar(
+            CircleAvatar(
               radius: 35,
-              backgroundColor: Color(0xFFE0E0E0),
-              child: Icon(Icons.person, size: 30, color: Color(0xFF9E9E9E)),
+              // --- MODIFIED: Use semantic theme colors ---
+              backgroundColor: colorScheme.secondaryContainer,
+              child: Icon(
+                Icons.person,
+                size: 30,
+                color: colorScheme.onSecondaryContainer,
+              ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: _kItemSpacing),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Dt. Manoranjan',
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                    // --- MODIFIED: Use semantic theme style ---
+                    style: textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     'Dietitian • 11 years of experience',
-                    style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                    // --- MODIFIED: Use semantic theme style ---
+                    style: textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
                   ),
-                  // --- MODIFIED: Wrapped "More Info" in InkWell ---
                   InkWell(
                     onTap: () {
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -73,12 +92,16 @@ class DietScreen extends StatelessWidget {
                       children: [
                         Text(
                           'More Info',
-                          style: TextStyle(fontSize: 12, color: Colors.blue),
+                          // --- MODIFIED: Use semantic theme style and color ---
+                          style: textTheme.labelLarge?.copyWith(
+                            color: colorScheme.primary,
+                          ),
                         ),
                         Icon(
                           Icons.arrow_drop_down,
                           size: 24,
-                          color: Colors.blue,
+                          // --- MODIFIED: Use semantic theme color ---
+                          color: colorScheme.primary,
                         ),
                       ],
                     ),
@@ -92,25 +115,31 @@ class DietScreen extends StatelessWidget {
     );
   }
 
-  // --- MODIFIED: Added context ---
   Widget _buildActionButtons(BuildContext context) {
+    // --- ADDED: Define a base style for buttons to reduce repetition ---
+    final ButtonStyle baseButtonStyle = ButtonStyle(
+      minimumSize: MaterialStateProperty.all(const Size(double.infinity, 48)),
+      shape: MaterialStateProperty.all(
+        RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      ),
+      elevation: MaterialStateProperty.all(0),
+    );
+
     return Column(
       children: [
         ElevatedButton(
-          // --- MODIFIED: Added SnackBar ---
           onPressed: () {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Opening messenger...')),
             );
           },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.blue,
-            foregroundColor: Colors.white,
-            minimumSize: const Size(double.infinity, 48),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
+          // --- MODIFIED: Merge base style with specific styles ---
+          style: baseButtonStyle.merge(
+            ElevatedButton.styleFrom(
+              // Let the theme handle default blue/white
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              foregroundColor: Theme.of(context).colorScheme.onPrimary,
             ),
-            elevation: 0,
           ),
           child: const Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -122,18 +151,17 @@ class DietScreen extends StatelessWidget {
         ),
         const SizedBox(height: 10),
         OutlinedButton(
-          // --- MODIFIED: Added SnackBar ---
           onPressed: () {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Showing appointments...')),
             );
           },
-          style: OutlinedButton.styleFrom(
-            foregroundColor: Colors.blue,
-            side: const BorderSide(color: Colors.blue),
-            minimumSize: const Size(double.infinity, 48),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
+          // --- MODIFIED: Merge base style with specific styles ---
+          style: baseButtonStyle.merge(
+            OutlinedButton.styleFrom(
+              // Let the theme handle default colors and border
+              foregroundColor: Theme.of(context).colorScheme.primary,
+              side: BorderSide(color: Theme.of(context).colorScheme.primary),
             ),
           ),
           child: const Row(
@@ -148,26 +176,31 @@ class DietScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildAppointmentInfo() {
-    // (This widget code is unchanged)
+  Widget _buildAppointmentInfo(BuildContext context) {
+    // --- MODIFIED: Use theme for styles and colors ---
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(_kItemSpacing),
       decoration: BoxDecoration(
-        color: Colors.blue.withOpacity(0.08),
+        // --- MODIFIED: Use theme color ---
+        color: colorScheme.primary.withOpacity(0.08),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Text.rich(
         TextSpan(
-          style: const TextStyle(
-            fontSize: 13,
-            color: Colors.black87,
+          // --- MODIFIED: Use theme style ---
+          style: textTheme.bodyMedium?.copyWith(
+            color: colorScheme.onSurface,
             height: 1.4,
           ),
           children: [
             const TextSpan(text: 'Your appointment is on '),
-            const TextSpan(
+            TextSpan(
               text: '25 July 2026 at 03:00 PM.',
-              style: TextStyle(fontWeight: FontWeight.bold),
+              // --- MODIFIED: Inherit style and just add weight ---
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             const TextSpan(text: ' Please be on time.'),
           ],

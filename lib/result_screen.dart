@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-// --- MODIFIED: Converted to StatefulWidget ---
 class HealthResultScreen extends StatefulWidget {
   const HealthResultScreen({super.key});
 
@@ -9,8 +8,16 @@ class HealthResultScreen extends StatefulWidget {
 }
 
 class _HealthResultScreenState extends State<HealthResultScreen> {
-  // --- ADDED: State variable to track selection ---
+  // State variable to track selection
   String _selectedOrgan = 'Gut';
+
+  // --- REFACTORED: Store organ data in a map for a data-driven UI ---
+  // This makes it easy to add/remove/change organs without duplicating code.
+  final Map<String, IconData> _organData = {
+    'Gut': Icons.bubble_chart_outlined,
+    'Pancreas': Icons.wb_sunny_outlined,
+    'Liver': Icons.filter_drama_outlined,
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -33,8 +40,9 @@ class _HealthResultScreenState extends State<HealthResultScreen> {
               ),
             ),
 
-            // --- 2. Main Content (Now Scrollable) ---
+            // --- 2. Main Content (Scrollable) ---
             Padding(
+              // Added const
               padding: const EdgeInsets.fromLTRB(24.0, 32.0, 24.0, 16.0),
               child: SingleChildScrollView(
                 child: Column(
@@ -42,15 +50,18 @@ class _HealthResultScreenState extends State<HealthResultScreen> {
                   children: [
                     // -- Header --
                     _buildHeader(),
+                    // Added const
                     const SizedBox(height: 40),
 
                     // -- Metabolism Card --
                     _buildMetabolismCard(),
 
+                    // Added const
                     const SizedBox(height: 20),
 
                     // -- Organ Selector --
                     _buildOrganSelector(),
+                    // Added const
                     const SizedBox(height: 20),
 
                     // -- View Result Button --
@@ -67,7 +78,7 @@ class _HealthResultScreenState extends State<HealthResultScreen> {
 
   /// Builds the "Today's Result" header section
   Widget _buildHeader() {
-    // (This widget code is unchanged)
+    // (This widget code is unchanged, added const)
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -105,7 +116,7 @@ class _HealthResultScreenState extends State<HealthResultScreen> {
 
   /// Builds the main "Gut Fermentation" card
   Widget _buildMetabolismCard() {
-    // (This widget code is unchanged)
+    // (This widget code is unchanged, added const)
     return Card(
       color: Colors.white,
       elevation: 8,
@@ -192,6 +203,7 @@ class _HealthResultScreenState extends State<HealthResultScreen> {
 
   /// Builds the bottom organ selector
   Widget _buildOrganSelector() {
+    // --- REFACTORED: To be data-driven ---
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       decoration: BoxDecoration(
@@ -210,31 +222,20 @@ class _HealthResultScreenState extends State<HealthResultScreen> {
         children: [
           Icon(Icons.arrow_back_ios_new, size: 16, color: Colors.grey[400]),
 
-          // --- MODIFIED: Wrapped chips in GestureDetector to update state ---
-          GestureDetector(
-            onTap: () => setState(() => _selectedOrgan = 'Gut'),
-            child: _buildOrganChip(
-              'Gut',
-              Icons.bubble_chart_outlined,
-              _selectedOrgan == 'Gut', // Use state variable
-            ),
-          ),
-          GestureDetector(
-            onTap: () => setState(() => _selectedOrgan = 'Pancreas'),
-            child: _buildOrganChip(
-              'Pancreas',
-              Icons.wb_sunny_outlined,
-              _selectedOrgan == 'Pancreas', // Use state variable
-            ),
-          ),
-          GestureDetector(
-            onTap: () => setState(() => _selectedOrgan = 'Liver'),
-            child: _buildOrganChip(
-              'Liver',
-              Icons.filter_drama_outlined,
-              _selectedOrgan == 'Liver', // Use state variable
-            ),
-          ),
+          // --- MODIFIED: Iterate over the _organData map to build chips ---
+          // This removes the duplicated GestureDetector blocks
+          ..._organData.entries.map((entry) {
+            final String label = entry.key;
+            final IconData icon = entry.value;
+            final bool isSelected = _selectedOrgan == label;
+
+            return GestureDetector(
+              onTap: () => setState(() => _selectedOrgan = label),
+              // Use a transparent background for hit-testing
+              behavior: HitTestBehavior.translucent,
+              child: _buildOrganChip(label, icon, isSelected),
+            );
+          }).toList(),
 
           Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey[400]),
         ],
@@ -244,7 +245,7 @@ class _HealthResultScreenState extends State<HealthResultScreen> {
 
   /// Helper widget for the organ chips in the selector
   Widget _buildOrganChip(String label, IconData icon, bool isSelected) {
-    // (This widget code is unchanged)
+    // (This widget code is unchanged, added const)
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       decoration: BoxDecoration(
@@ -276,9 +277,9 @@ class _HealthResultScreenState extends State<HealthResultScreen> {
 
   /// Builds the "View test result" text button
   Widget _buildViewResultButton() {
+    // (This widget code is unchanged, added const)
     return Center(
       child: TextButton(
-        // --- MODIFIED: Added SnackBar on press ---
         onPressed: () {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Loading test results...')),

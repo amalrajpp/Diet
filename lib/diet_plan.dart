@@ -24,54 +24,39 @@ class DietPlanScreen extends StatelessWidget {
                   left: 16,
                   right: 30,
                 ),
+                // The main content column is now composed of smaller widgets
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildHeader(context),
+                    const _DietPlanHeader(),
                     const SizedBox(height: 14),
-                    Card(
-                      elevation: 0,
-                      color: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Column(
-                          children: [
-                            // --- MODIFIED: _buildPlanSummary is now tappable ---
-                            _buildPlanSummary(context),
-                            const Padding(
-                              padding: EdgeInsets.symmetric(vertical: 8.0),
-                              child: Divider(),
-                            ),
-                            _buildDailyTargetSection(),
-                          ],
-                        ),
-                      ),
-                    ),
+                    const _DietDetailsCard(),
                     const SizedBox(height: 15),
-                    _buildGoalSection(),
+                    const _GoalSection(),
                     const Padding(
                       padding: EdgeInsets.symmetric(vertical: 8.0),
                       child: Divider(),
                     ),
-                    _buildApproachSection(),
+                    const _ApproachSection(),
                   ],
                 ),
               ),
               const Divider(height: 1, thickness: 1),
-              // --- MODIFIED: _buildFooterLink is now tappable ---
-              _buildFooterLink(context),
+              const _ViewPlanFooter(),
             ],
           ),
         ),
       ),
     );
   }
+}
 
-  Widget _buildHeader(context) {
-    // (This widget is unchanged and was already functional)
+// --- 1. Header Widget ---
+class _DietPlanHeader extends StatelessWidget {
+  const _DietPlanHeader();
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -118,9 +103,41 @@ class DietPlanScreen extends StatelessWidget {
       ],
     );
   }
+}
 
-  // --- MODIFIED: Added context and GestureDetector ---
-  Widget _buildPlanSummary(BuildContext context) {
+// --- 2. Main Details Card (White) ---
+class _DietDetailsCard extends StatelessWidget {
+  const _DietDetailsCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 0,
+      color: Colors.white,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Column(
+          children: const [
+            _PlanSummary(),
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 8.0),
+              child: Divider(),
+            ),
+            _DailyTargetSection(),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// --- 3. Plan Summary (within Details Card) ---
+class _PlanSummary extends StatelessWidget {
+  const _PlanSummary();
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       children: [
         Row(
@@ -137,7 +154,6 @@ class DietPlanScreen extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 6),
-        // --- MODIFIED: Wrapped in GestureDetector ---
         GestureDetector(
           onTap: () {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -162,9 +178,14 @@ class DietPlanScreen extends StatelessWidget {
       ],
     );
   }
+}
 
-  Widget _buildDailyTargetSection() {
-    // (This widget code is unchanged)
+// --- 4. Daily Target Section (within Details Card) ---
+class _DailyTargetSection extends StatelessWidget {
+  const _DailyTargetSection();
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -184,26 +205,35 @@ class DietPlanScreen extends StatelessWidget {
         ),
         const SizedBox(height: 14),
         Row(
-          children: [
-            _buildStatCard('Calories', '1500', 'kcal/day'),
-            const SizedBox(width: 12),
-            _buildStatCard('Protein', '70', 'gram/day'),
+          children: const [
+            _StatCard('Calories', '1500', 'kcal/day'),
+            SizedBox(width: 12),
+            _StatCard('Protein', '70', 'gram/day'),
           ],
         ),
         const SizedBox(height: 16),
         Row(
-          children: [
-            _buildStatCard('Fiber', '>25', 'gram/day'),
-            const SizedBox(width: 12),
-            _buildStatCard('Water', '3', 'Liters/day'),
+          children: const [
+            _StatCard('Fiber', '>25', 'gram/day'),
+            SizedBox(width: 12),
+            _StatCard('Water', '3', 'Liters/day'),
           ],
         ),
       ],
     );
   }
+}
 
-  Widget _buildStatCard(String title, String value, String unit) {
-    // (This widget code is unchanged)
+// --- 5. Reusable Stat Card Widget ---
+class _StatCard extends StatelessWidget {
+  const _StatCard(this.title, this.value, this.unit);
+
+  final String title;
+  final String value;
+  final String unit;
+
+  @override
+  Widget build(BuildContext context) {
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -224,9 +254,14 @@ class DietPlanScreen extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _buildGoalSection() {
-    // (This widget code is unchanged)
+// --- 6. Goal Section ---
+class _GoalSection extends StatelessWidget {
+  const _GoalSection();
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -276,9 +311,14 @@ class DietPlanScreen extends StatelessWidget {
       ],
     );
   }
+}
 
-  Widget _buildApproachSection() {
-    // (This widget code is unchanged)
+// --- 7. Approach Section ---
+class _ApproachSection extends StatelessWidget {
+  const _ApproachSection();
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -296,19 +336,26 @@ class DietPlanScreen extends StatelessWidget {
         Wrap(
           spacing: 8.0,
           runSpacing: 8.0,
-          children: [
-            _buildChip('Low GI'),
-            _buildChip('High Protein'),
-            _buildChip('Balanced Fiber'),
-            _buildChip('Calorie Deficit'),
+          children: const [
+            _InfoChip('Low GI'),
+            _InfoChip('High Protein'),
+            _InfoChip('Balanced Fiber'),
+            _InfoChip('Calorie Deficit'),
           ],
         ),
       ],
     );
   }
+}
 
-  Widget _buildChip(String label) {
-    // (This widget code is unchanged)
+// --- 8. Reusable Chip Widget ---
+class _InfoChip extends StatelessWidget {
+  const _InfoChip(this.label);
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       decoration: BoxDecoration(
@@ -325,12 +372,16 @@ class DietPlanScreen extends StatelessWidget {
       ),
     );
   }
+}
 
-  // --- MODIFIED: Added context and SnackBar ---
-  Widget _buildFooterLink(BuildContext context) {
+// --- 9. Footer Link ---
+class _ViewPlanFooter extends StatelessWidget {
+  const _ViewPlanFooter();
+
+  @override
+  Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        // --- MODIFIED: Handle tap ---
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(const SnackBar(content: Text('Loading diet plan...')));
