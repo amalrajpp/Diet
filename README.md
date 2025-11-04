@@ -1,16 +1,31 @@
-# Diet
+Here’s a polished README.md you can use for your Flutter Diet Plan App on GitHub — complete with description, features, setup instructions, screenshots, and tech stack.
+You can replace image URLs with your actual GitHub image links (I’ll show you how below 👇).
 
-A new Flutter project.
+🥗 Diet Plan App (Flutter)
 
-## Getting Started
+A modern and responsive Flutter UI implementation of a Diet & Health Tracking application.
+This project was built as part of an internship assignment — converting a Figma design into a fully functional Flutter UI.
 
-This project is a starting point for a Flutter application.
+📸 Screenshots
+Home Screen	Today's Result	Diet Plan	Consultant
 
-A few resources to get you started if this is your first Flutter project:
+	
+	
+	
+| ![signup](https://github.com/amalrajpp/Diet/blob/101ce253de5a68631e9c01f1c94d2353790a101a/homescreen.jpg) |
+| ![signup](https://github.com/amalrajpp/Diet/blob/101ce253de5a68631e9c01f1c94d2353790a101a/result_screen.jpg) |
+| ![signup](https://github.com/amalrajpp/Diet/blob/101ce253de5a68631e9c01f1c94d2353790a101a/plan_screen.jpg) |
+| ![signup](https://github.com/amalrajpp/Diet/blob/101ce253de5a68631e9c01f1c94d2353790a101a/consultant.jpg) |
+| ![signup](https://github.com/amalrajpp/Diet/blob/101ce253de5a68631e9c01f1c94d2353790a101a/next_plan.jpg) |
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+🧩 Tech Stack
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Flutter (UI framework)
+
+Dart (Programming language)
+
+Material Design components
+
+flutter_svg (for SVG icons)
+
+Google Fonts (optional for typography)
